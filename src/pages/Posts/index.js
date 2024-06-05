@@ -3,8 +3,10 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, 
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import EditPostModal from '../../components/EditPostModal';
-import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faShare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { Share } from 'react-native';
+
 
 const STORAGE_KEY = '@posts';
 
@@ -19,7 +21,7 @@ const Posts = ({ navigation, route }) => {
     const [likeCounts, setLikeCounts] = useState({});
 
     useEffect(() => {
-        loadPosts();
+        loadPostsFromStorage(); // Carregar dados do AsyncStorage
     }, []);
 
     useEffect(() => {
@@ -28,17 +30,36 @@ const Posts = ({ navigation, route }) => {
         }
     }, [route.params?.newPost]);
 
-    const loadPosts = async () => {
+    const loadPostsFromStorage = async () => {
         try {
             const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
             const savedPosts = jsonValue != null ? JSON.parse(jsonValue) : [];
-            setPosts(savedPosts);
-            setLoading(false);
+            if (savedPosts.length > 0) {
+                setPosts(savedPosts);
+                setLoading(false);
+            } else {
+                // Se não houver dados armazenados, carregar da API
+                loadPosts();
+            }
         } catch (error) {
-            console.error('Error loading posts:', error);
+            console.error('Error loading posts from storage:', error);
             setLoading(false);
         }
     };
+
+    const loadPosts = async () => {
+        try {
+            const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+            setPosts(response.data);
+            setLoading(false);
+            // Salvar os dados carregados no AsyncStorage
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(response.data));
+        } catch (error) {
+            console.error('Error loading posts from API:', error);
+            setLoading(false);
+        }
+    };
+
     const savePosts = async (updatedPosts) => {
         try {
             await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPosts));
@@ -95,22 +116,67 @@ const Posts = ({ navigation, route }) => {
         setModalVisible(false);
     };
 
-    const handleLikePost = (postId) => {
-        // Verifica se o post já foi "gostado" pelo usuário
-        const isLiked = likedPosts.includes(postId);
-        // Atualiza a lista de posts "gostados"
-        if (isLiked) {
-            setLikedPosts(prevLikedPosts => prevLikedPosts.filter(id => id !== postId));
-            setLikeCounts({
-                ...likeCounts,
-                [postId]: likeCounts[postId] ? likeCounts[postId] - 1 : 0,
+
+    const handleLikePost = async (postId) => {
+        try {
+            // Verifica se o post já foi "gostado" pelo usuário
+            const isLiked = likedPosts.includes(postId);
+            // Atualiza a lista de posts "gostados"
+            if (isLiked) {
+                // Se o post já foi curtido, remove da lista de curtidas
+                setLikedPosts(prevLikedPosts => prevLikedPosts.filter(id => id !== postId));
+                setLikeCounts(prevLikeCounts => ({
+                    ...prevLikeCounts,
+                    [postId]: prevLikeCounts[postId] ? prevLikeCounts[postId] - 1 : 0,
+                }));
+            } else {
+                // Se o post não foi curtido, adiciona à lista de curtidas
+                setLikedPosts(prevLikedPosts => [...prevLikedPosts, postId]);
+                setLikeCounts(prevLikeCounts => ({
+                    ...prevLikeCounts,
+                    [postId]: prevLikeCounts[postId] ? prevLikeCounts[postId] + 1 : 1,
+                }));
+            }
+
+            // Salva os likes atualizados no AsyncStorage, juntamente com o estilo do ícone
+            const updatedLikes = {
+                likedPosts: likedPosts,
+                likeCounts: likeCounts,
+            };
+            await AsyncStorage.setItem('@likes', JSON.stringify(updatedLikes));
+        } catch (error) {
+            console.error('Error saving likes:', error);
+        }
+    };
+
+    //Sistema para salvar os Like (Tentativa)
+    const restoreLikesFromStorage = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@likes');
+            if (jsonValue !== null) {
+                const savedLikes = JSON.parse(jsonValue);
+                setLikedPosts(savedLikes.likedPosts);
+                setLikeCounts(savedLikes.likeCounts);
+            }
+        } catch (error) {
+            console.error('Error restoring likes from storage:', error);
+        }
+    };
+
+    useEffect(() => {
+        restoreLikesFromStorage();
+    }, []);
+
+    const handleSharePost = async (postId, postTitle, postBody) => {
+        try {
+            const message = `Confira este post: ${postTitle}\n${postBody}`;
+            await Share.share({
+                message: message,
+                title: 'Compartilhar Post',
             });
-        } else {
-            setLikedPosts(prevLikedPosts => [...prevLikedPosts, postId]);
-            setLikeCounts({
-                ...likeCounts,
-                [postId]: likeCounts[postId] ? likeCounts[postId] + 1 : 1,
-            });
+            console.log('Post compartilhado');
+        } catch (error) {
+            console.error('Erro ao compartilhar o post:', error.message);
         }
     };
 
@@ -142,11 +208,18 @@ const Posts = ({ navigation, route }) => {
                                 onPress={() => handleEditPost(item)}
                             />
                             <TouchableOpacity onPress={() => handleLikePost(item.id)}>
-                                <View style={styles.likeContainer}>
+                                <View style={styles.iconContainer}>
                                     <FontAwesomeIcon icon={faThumbsUp} size={20} color={likedPosts.includes(item.id) ? 'green' : 'black'} />
-                                    <Text style={styles.likeCount}>{likeCounts[item.id] || 0}</Text>
+                                    <Text style={styles.iconText}>{likeCounts[item.id] || 0}</Text>
                                 </View>
                             </TouchableOpacity>
+                            <TouchableOpacity onPress={() => handleSharePost(item.id, item.title, item.body)}>
+                                <View style={styles.shareContainer}>
+                                    <FontAwesomeIcon icon={faShare} size={20} color="blue" />
+                                    <Text style={styles.shareText}>Compartilhar</Text>
+                                </View>
+                            </TouchableOpacity>
+
                             <Button
                                 title="Deletar"
                                 color="red"
