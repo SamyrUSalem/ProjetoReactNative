@@ -17,9 +17,9 @@ export function Routes({ userCredentials }) {
 
                     if (route.name === 'Posts') {
                         iconName = faNewspaper; // Defina o ícone para a guia "Posts"
-                    } else if (route.name === 'Profile') {
+                    } else if (route.name === 'Perfil') {
                         iconName = faUser; // Defina o ícone para a guia "Profile"
-                    } else if (route.name === 'Map') {
+                    } else if (route.name === 'Mapa') {
                         iconName = faMap;
                     }
 
@@ -29,9 +29,9 @@ export function Routes({ userCredentials }) {
             })}
         >
             <Tab.Screen name="Posts" component={Posts} />
-            <Tab.Screen name='Map' component={Map} />
+            <Tab.Screen name='Mapa' component={Map} />
             {userCredentials && (
-                <Tab.Screen name="Profile">
+                <Tab.Screen name="Perfil">
                     {props => <Profile {...props} userCredentials={userCredentials} />}
                 </Tab.Screen>
             )}

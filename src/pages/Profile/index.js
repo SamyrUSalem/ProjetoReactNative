@@ -3,7 +3,9 @@ import { View, Text, TextInput, StyleSheet, Button, Image, Alert } from 'react-n
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 
-const Profile = ({ userCredentials }) => {
+const STORAGE_KEY = '@profile_image';
+
+function Profile({ userCredentials }) {
     const [profileImage, setProfileImage] = useState(null);
     const [username, setUsername] = useState(userCredentials.username);
     const [password, setPassword] = useState(userCredentials.password);
@@ -35,11 +37,14 @@ const Profile = ({ userCredentials }) => {
     };
 
     const saveProfileData = async () => {
+        if (username.trim() === '' || password.trim() === '') {
+            Alert.alert('Erro', 'Os campos de usuário e senha não podem estar vazios.');
+            return;
+        }
+
         try {
-            // Remove os dados antigos do usuário do AsyncStorage
             await AsyncStorage.removeItem(userCredentials.username);
 
-            // Atualiza os dados do usuário no AsyncStorage
             const updatedUserData = { username, password };
             await AsyncStorage.setItem(username, JSON.stringify(updatedUserData));
 
@@ -50,7 +55,6 @@ const Profile = ({ userCredentials }) => {
             Alert.alert('Erro', 'Ocorreu um erro ao salvar os dados do perfil');
         }
     };
-
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -72,7 +76,6 @@ const Profile = ({ userCredentials }) => {
         }
     };
 
-
     return (
         <View style={styles.container}>
             {profileImage ? (
@@ -88,25 +91,29 @@ const Profile = ({ userCredentials }) => {
                         style={styles.input}
                         value={username}
                         onChangeText={setUsername}
-                        placeholder="Username"
+                        placeholder="Usuário"
                     />
                     <TextInput
                         style={styles.input}
                         value={password}
                         onChangeText={setPassword}
-                        placeholder="Password"
+                        placeholder="Senha"
                         secureTextEntry={true}
                     />
                     <Button title="Salvar" onPress={saveProfileData} />
                 </>
             ) : (
                 <>
-                    <Text style={styles.username}>Username: {username}</Text>
-                    <Text style={styles.password}>Password: {password}</Text>
-                    <Button title="Editar" onPress={() => setIsEditing(true)} />
+                    <Text style={styles.username}>Usuário: {username}</Text>
+                    <Text style={styles.password}>Senha: {password}</Text>
+                    <View style={styles.buttons}>
+                        <View style={styles.button}>
+                            <Button title="Editar" onPress={() => setIsEditing(true)} />
+                        </View>
+                        <Button title="Adicionar/Trocar Imagem" onPress={pickImage} />
+                    </View>
                 </>
             )}
-            <Button title="Adicionar/Trocar Imagem" onPress={pickImage} />
         </View>
     );
 };
@@ -121,13 +128,13 @@ const styles = StyleSheet.create({
     image: {
         width: 100,
         height: 100,
-        borderRadius: 50, // Tornar a imagem circular
+        borderRadius: 50,
         marginBottom: 20,
     },
     placeholder: {
         width: 100,
         height: 100,
-        borderRadius: 50, // Tornar o placeholder circular
+        borderRadius: 50,
         backgroundColor: '#ccc',
         justifyContent: 'center',
         alignItems: 'center',
@@ -154,6 +161,13 @@ const styles = StyleSheet.create({
         color: '#888',
         marginBottom: 20,
     },
+    buttons: {
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    button: {
+        marginBottom: 10
+    }
 });
 
 export default Profile;

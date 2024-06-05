@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Button, Linking, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-const Map = () => {
+function Map() {
     const points = [
         { latitude: -3.0941363, longitude: -60.0252695 },
         { latitude: -3.1043615, longitude: -60.0145238 },

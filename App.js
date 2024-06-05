@@ -24,10 +24,10 @@ export default function App() {
         if (user.password === password) {
           setUserCredentials({ username, password });
         } else {
-          alert('Invalid username or password');
+          alert('Usuário e Senha inválidos');
         }
       } else {
-        alert('User not found');
+        alert('Usuário não encontrado...');
       }
     } catch (error) {
       console.error('Login error:', error);

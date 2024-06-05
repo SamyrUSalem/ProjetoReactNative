@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, TextInput, Button, Modal, StyleSheet } from 'react-native';
 
-const EditPostModal = ({ visible, onClose, onSave, title, setTitle, body, setBody }) => {
+function EditPostModal({ visible, onClose, onSave, title, setTitle, body, setBody }) {
     return (
         <Modal
             animationType="slide"
@@ -12,7 +12,7 @@ const EditPostModal = ({ visible, onClose, onSave, title, setTitle, body, setBod
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Edit Post</Text>
+                    <Text style={styles.modalTitle}>Editando...</Text>
                     <TextInput
                         style={styles.input}
                         value={title}
@@ -26,8 +26,10 @@ const EditPostModal = ({ visible, onClose, onSave, title, setTitle, body, setBod
                         placeholder="Body"
                         multiline
                     />
-                    <Button title="Save" onPress={onSave} />
-                    <Button title="Cancel" onPress={onClose} />
+                    <View style={styles.buttons}>
+                        <Button title="Save" onPress={onSave} />
+                        <Button title="Cancel" onPress={onClose} />
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -58,6 +60,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         width: '100%',
     },
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 8,
+    }
 });
 
 export default EditPostModal;

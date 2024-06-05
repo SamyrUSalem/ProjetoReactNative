@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 
-const Login = ({ navigation, onLogin }) => {
+function Login({ navigation, onLogin }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -32,8 +32,14 @@ const Login = ({ navigation, onLogin }) => {
                 value={password}
                 onChangeText={setPassword}
             />
-            <Button title="Login" onPress={handleLogin} />
-            <Button title="Registre-se" onPress={handleNavigateToRegister} />
+            <View style={styles.buttonsContainer}>
+                <View>
+                    <Button title="Login" onPress={handleLogin} />
+                </View>
+                <View>
+                    <Button title="Registre-se" onPress={handleNavigateToRegister} />
+                </View>
+            </View>
         </View>
     );
 };
@@ -53,6 +59,13 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 4,
         paddingHorizontal: 10,
+    },
+    buttonsContainer: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 10,
     },
 });
 

@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const Comments = () => {
+function Comments() {
     return (
         <View>
             <Text>Comments Page</Text>

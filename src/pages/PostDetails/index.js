@@ -1,13 +1,12 @@
-// src/pages/PostDetails.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CommentInput from '../../components/CommentInput';
 import EditCommentModal from '../../components/EditCommentModal';
+import { loadPostComments, savePostComments } from '../../utils/storageComments';
 
 const STORAGE_KEY = '@comments_';
 
-const PostDetails = ({ route }) => {
+function PostDetails({ route }) {
     const { post } = route.params;
     const [comments, setComments] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -15,26 +14,12 @@ const PostDetails = ({ route }) => {
     const [commentText, setCommentText] = useState('');
 
     useEffect(() => {
+        const loadComments = async () => {
+            const postComments = await loadPostComments(post.id);
+            setComments(postComments);
+        };
         loadComments();
-    }, []);
-
-    const loadComments = async () => {
-        try {
-            const jsonValue = await AsyncStorage.getItem(`${STORAGE_KEY}${post.id}`);
-            const savedComments = jsonValue != null ? JSON.parse(jsonValue) : [];
-            setComments(savedComments);
-        } catch (error) {
-            console.error('Error ao carregar os comentarios:', error);
-        }
-    };
-
-    const saveComments = async (updatedComments) => {
-        try {
-            await AsyncStorage.setItem(`${STORAGE_KEY}${post.id}`, JSON.stringify(updatedComments));
-        } catch (error) {
-            console.error('Error ao salvar os comentarios:', error);
-        }
-    };
+    }, [post.id]);
 
     const handleAddComment = async (comment) => {
         const newComment = {
@@ -43,10 +28,10 @@ const PostDetails = ({ route }) => {
         };
         const updatedComments = [newComment, ...comments];
         setComments(updatedComments);
-        await saveComments(updatedComments);
+        await savePostComments(post.id, updatedComments);
     };
 
-    const handleDeleteComment = (commentId) => {
+    const handleDeleteComment = async (commentId) => {
         Alert.alert(
             'Deletar Comentário',
             'Tem certeza?',
@@ -60,7 +45,7 @@ const PostDetails = ({ route }) => {
                     onPress: async () => {
                         const updatedComments = comments.filter(comment => comment.id !== commentId);
                         setComments(updatedComments);
-                        await saveComments(updatedComments);
+                        await savePostComments(post.id, updatedComments);
                     },
                     style: 'destructive',
                 },
@@ -79,7 +64,7 @@ const PostDetails = ({ route }) => {
         const updatedComment = { ...currentComment, text: commentText };
         const updatedComments = comments.map(comment => (comment.id === updatedComment.id ? updatedComment : comment));
         setComments(updatedComments);
-        await saveComments(updatedComments);
+        await savePostComments(post.id, updatedComments);
         setModalVisible(false);
     };
 
@@ -100,7 +85,8 @@ const PostDetails = ({ route }) => {
                         </View>
                     </View>
                 )}
-                ListEmptyComponent={<Text>No comments yet.</Text>}
+                ListEmptyComponent={<Text>Sem comentários...</Text>}
+                extraData={comments}
             />
             <EditCommentModal
                 visible={modalVisible}
@@ -115,6 +101,7 @@ const PostDetails = ({ route }) => {
 
 const styles = StyleSheet.create({
     container: {
+        marginTop: 25,
         flex: 1,
         padding: 16,
         backgroundColor: '#fff',
@@ -129,10 +116,14 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     commentItem: {
-        padding: 8,
-        backgroundColor: '#f9f9f9',
-        borderRadius: 4,
-        marginBottom: 8,
+        backgroundColor: '#DAD8D6',
+        borderRadius: 8,
+        padding: 16,
+        marginTop: 20,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 2,
     },
     buttonContainer: {
         flexDirection: 'row',
