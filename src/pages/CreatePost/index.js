@@ -1,11 +1,11 @@
+// CreatePost.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { savePost } from '../../utils/storagePosts'; // Importando o utilitário
+import { savePost } from '../../utils/storagePosts';
+import { Container, Label, Input, SubmitButton } from './CreatePostStyles';
 
 function CreatePost({ navigation, route }) {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
-
     const { onPostCreated } = route.params || {};
 
     const handleSubmit = async () => {
@@ -19,46 +19,24 @@ function CreatePost({ navigation, route }) {
         }
     };
 
-
     return (
-        <View style={styles.container}>
-            <Text style={styles.label}>Título</Text>
-            <TextInput
-                style={styles.input}
+        <Container>
+            <Label>Título</Label>
+            <Input
                 value={title}
                 onChangeText={setTitle}
             />
-            <Text style={styles.label}>Mensagem</Text>
-            <TextInput
-                style={styles.input}
+            <Label>Mensagem</Label>
+            <Input
                 value={body}
                 onChangeText={setBody}
             />
-            <Button
+            <SubmitButton
                 title="Enviar"
                 onPress={handleSubmit}
             />
-        </View>
+        </Container>
     );
-};
-
-const styles = StyleSheet.create({
-    container: {
-        marginTop: 25,
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#fff',
-    },
-    label: {
-        fontSize: 18,
-        marginVertical: 8,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 8,
-        marginBottom: 16,
-    },
-});
+}
 
 export default CreatePost;

@@ -1,6 +1,6 @@
-// src/components/CommentInput.js
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { TextInput, Button } from 'react-native';
+import { Container, Input } from './CommentInput';
 
 const CommentInput = ({ onAddComment }) => {
     const [comment, setComment] = useState('');
@@ -13,32 +13,15 @@ const CommentInput = ({ onAddComment }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <TextInput
-                style={styles.input}
+        <Container>
+            <Input
                 placeholder="Envie um Comentário"
                 value={comment}
                 onChangeText={setComment}
             />
             <Button title="Adicionar" onPress={handleAddComment} />
-        </View>
+        </Container>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 16,
-    },
-    input: {
-        flex: 1,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 4,
-        padding: 8,
-        marginRight: 8,
-    },
-});
 
 export default CommentInput;

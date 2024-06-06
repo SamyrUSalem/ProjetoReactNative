@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Container, Input, RegisterButton } from './RegisterStyles';
 
 function Register({ navigation }) {
     const [username, setUsername] = useState('');
@@ -27,41 +28,21 @@ function Register({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <TextInput
-                style={styles.input}
+        <Container>
+            <Input
                 placeholder="Username"
                 value={username}
                 onChangeText={setUsername}
             />
-            <TextInput
-                style={styles.input}
+            <Input
                 placeholder="Password"
                 secureTextEntry={true}
                 value={password}
                 onChangeText={setPassword}
             />
-            <Button title="Register" onPress={handleRegister} />
-        </View>
+            <RegisterButton title="Register" onPress={handleRegister} />
+        </Container>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-    },
-    input: {
-        width: '100%',
-        height: 40,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 4,
-        paddingHorizontal: 10,
-    },
-});
 
 export default Register;

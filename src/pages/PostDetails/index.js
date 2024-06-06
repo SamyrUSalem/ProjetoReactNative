@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, Alert } from 'react-native';
+import { Text, FlatList, Button, Alert } from 'react-native';
 import CommentInput from '../../components/CommentInput';
 import EditCommentModal from '../../components/EditCommentModal';
 import { loadPostComments, savePostComments } from '../../utils/storageComments';
+import { Container, Title, Body, CommentItem, ButtonContainer } from './PostDetailsStyles';
 
 const STORAGE_KEY = '@comments_';
 
@@ -60,6 +61,7 @@ function PostDetails({ route }) {
         setModalVisible(true);
     };
 
+
     const handleSaveEdit = async () => {
         const updatedComment = { ...currentComment, text: commentText };
         const updatedComments = comments.map(comment => (comment.id === updatedComment.id ? updatedComment : comment));
@@ -69,21 +71,21 @@ function PostDetails({ route }) {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>{post.title}</Text>
-            <Text style={styles.body}>{post.body}</Text>
+        <Container>
+            <Title>{post.title}</Title>
+            <Body>{post.body}</Body>
             <CommentInput onAddComment={handleAddComment} />
             <FlatList
                 data={comments}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <View style={styles.commentItem}>
+                    <CommentItem>
                         <Text>{item.text}</Text>
-                        <View style={styles.buttonContainer}>
+                        <ButtonContainer>
                             <Button title="Editar" onPress={() => handleEditComment(item)} />
                             <Button title="Deletar" color="red" onPress={() => handleDeleteComment(item.id)} />
-                        </View>
-                    </View>
+                        </ButtonContainer>
+                    </CommentItem>
                 )}
                 ListEmptyComponent={<Text>Sem comentários...</Text>}
                 extraData={comments}
@@ -95,41 +97,8 @@ function PostDetails({ route }) {
                 text={commentText}
                 setText={setCommentText}
             />
-        </View>
+        </Container>
     );
-};
-
-const styles = StyleSheet.create({
-    container: {
-        marginTop: 25,
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#fff',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 16,
-    },
-    body: {
-        fontSize: 16,
-        marginBottom: 16,
-    },
-    commentItem: {
-        backgroundColor: '#DAD8D6',
-        borderRadius: 8,
-        padding: 16,
-        marginTop: 20,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 2,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 8,
-    },
-});
+}
 
 export default PostDetails;

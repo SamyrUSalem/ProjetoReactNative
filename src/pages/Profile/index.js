@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Button, Image, Alert } from 'react-native';
+import { Button, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import { Container, ProfileImage, Placeholder, PlaceholderText, Input, Username, Password, Buttons, ButtonContainer } from './ProfileStyles';
 
 const STORAGE_KEY = '@profile_image';
 
@@ -77,24 +78,22 @@ function Profile({ userCredentials }) {
     };
 
     return (
-        <View style={styles.container}>
+        <Container>
             {profileImage ? (
-                <Image source={{ uri: profileImage }} style={styles.image} />
+                <ProfileImage source={{ uri: profileImage }} />
             ) : (
-                <View style={styles.placeholder}>
-                    <Text style={styles.placeholderText}>Nenhuma imagem</Text>
-                </View>
+                <Placeholder>
+                    <PlaceholderText>Nenhuma imagem</PlaceholderText>
+                </Placeholder>
             )}
             {isEditing ? (
                 <>
-                    <TextInput
-                        style={styles.input}
+                    <Input
                         value={username}
                         onChangeText={setUsername}
                         placeholder="Usuário"
                     />
-                    <TextInput
-                        style={styles.input}
+                    <Input
                         value={password}
                         onChangeText={setPassword}
                         placeholder="Senha"
@@ -104,70 +103,18 @@ function Profile({ userCredentials }) {
                 </>
             ) : (
                 <>
-                    <Text style={styles.username}>Usuário: {username}</Text>
-                    <Text style={styles.password}>Senha: {password}</Text>
-                    <View style={styles.buttons}>
-                        <View style={styles.button}>
+                    <Username>Usuário: {username}</Username>
+                    <Password>Senha: {password}</Password>
+                    <Buttons>
+                        <ButtonContainer>
                             <Button title="Editar" onPress={() => setIsEditing(true)} />
-                        </View>
+                        </ButtonContainer>
                         <Button title="Adicionar/Trocar Imagem" onPress={pickImage} />
-                    </View>
+                    </Buttons>
                 </>
             )}
-        </View>
+        </Container>
     );
-};
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-    },
-    image: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginBottom: 20,
-    },
-    placeholder: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: '#ccc',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    placeholderText: {
-        color: '#888',
-    },
-    input: {
-        width: '100%',
-        height: 40,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 4,
-        paddingHorizontal: 10,
-    },
-    username: {
-        fontSize: 20,
-        marginVertical: 10,
-    },
-    password: {
-        fontSize: 16,
-        color: '#888',
-        marginBottom: 20,
-    },
-    buttons: {
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    button: {
-        marginBottom: 10
-    }
-});
+}
 
 export default Profile;

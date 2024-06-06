@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, Button, Alert } from 'react-native';
+import { View, FlatList, TouchableOpacity, ActivityIndicator, Button } from 'react-native';
 import EditPostModal from '../../components/EditPostModal';
 import { faThumbsUp, faShare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { loadPosts, loadPostsFromStorage, savePosts } from '../../utils/postService';
-import { saveLikes, restoreLikesFromStorage } from '../../utils/storage';
+import { loadPostsFromStorage } from '../../utils/postService';
+import { restoreLikesFromStorage } from '../../utils/storage';
 import { handleSharePost } from '../../utils/share';
 import { addNewPost } from '../../utils/addNewPost';
 import { deletePost } from '../../utils/deletePost';
 import { editPost } from '../../utils/editPost';
 import { saveEdit } from '../../utils/saveEdit';
 import { likePost } from '../../utils/likePost';
-
+import { Container, Loader, Card, PostItem, Title, Body, ButtonContainer, IconContainer, IconText, ShareContainer, ShareText } from './PostsStyles';
 
 function Posts({ navigation, route }) {
     const [posts, setPosts] = useState([]);
@@ -58,43 +58,43 @@ function Posts({ navigation, route }) {
     };
 
     const renderItem = useCallback(({ item }) => (
-        <View style={styles.card}>
+        <Card>
             <TouchableOpacity
-                style={styles.postItem}
+                style={PostItem}
                 onPress={() => navigation.navigate('PostDetails', { post: item })}
             >
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.body}>{item.body}</Text>
+                <Title>{item.title}</Title>
+                <Body>{item.body}</Body>
             </TouchableOpacity>
-            <View style={styles.buttonContainer}>
+            <ButtonContainer>
                 <Button title="Editar" onPress={() => handleEditPost(item)} />
                 <TouchableOpacity onPress={() => handleLikePost(item.id)}>
-                    <View style={styles.iconContainer}>
+                    <View style={IconContainer}>
                         <FontAwesomeIcon icon={faThumbsUp} size={20} color={likedPosts.includes(item.id) ? 'green' : 'black'} />
-                        <Text style={styles.iconText}>{likeCounts[item.id] || 0}</Text>
+                        <IconText>{likeCounts[item.id] || 0}</IconText>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleSharePost(item.title, item.body)}>
-                    <View style={styles.shareContainer}>
+                    <View style={ShareContainer}>
                         <FontAwesomeIcon icon={faShare} size={20} color="blue" />
-                        <Text style={styles.shareText}>Compartilhar</Text>
+                        <ShareText>Compartilhar</ShareText>
                     </View>
                 </TouchableOpacity>
                 <Button title="Deletar" color="red" onPress={() => handleDeletePost(item.id)} />
-            </View>
-        </View>
+            </ButtonContainer>
+        </Card>
     ), [likedPosts, likeCounts]);
 
     if (loading) {
         return (
-            <View style={styles.loader}>
+            <Loader>
                 <ActivityIndicator size="large" color="#0000ff" />
-            </View>
+            </Loader>
         );
     }
 
     return (
-        <View style={styles.container}>
+        <Container>
             <FlatList
                 data={posts}
                 keyExtractor={(item) => item.id.toString()}
@@ -110,70 +110,8 @@ function Posts({ navigation, route }) {
                 body={body}
                 setBody={setBody}
             />
-        </View>
+        </Container>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#DAD8D6',
-    },
-    loader: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 16,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 8,
-        elevation: 2,
-    },
-    postItem: {
-        marginBottom: 16,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    body: {
-        fontSize: 14,
-        color: '#667',
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    likeContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    likeCount: {
-        marginLeft: 5,
-    },
-    shareContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    shareText: {
-        marginLeft: 5,
-        color: 'blue',
-    },
-    iconContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    iconText: {
-        marginLeft: 5,
-    },
-});
 
 export default Posts;

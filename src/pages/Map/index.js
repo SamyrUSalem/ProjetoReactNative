@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Button, Linking, Platform } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { Marker } from 'react-native-maps';
+import { Container, MapContainer } from './MapStyles';
 
 function Map() {
     const points = [
@@ -23,9 +23,8 @@ function Map() {
     };
 
     return (
-        <View style={styles.container}>
-            <MapView
-                style={styles.map}
+        <Container>
+            <MapContainer
                 initialRegion={{
                     latitude: points[0].latitude,
                     longitude: points[0].longitude,
@@ -44,18 +43,9 @@ function Map() {
                         onPress={() => handleOpenNavigationApp(point.latitude, point.longitude)}
                     />
                 ))}
-            </MapView>
-        </View>
+            </MapContainer>
+        </Container>
     );
-};
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    map: {
-        flex: 1,
-    },
-});
+}
 
 export default Map;

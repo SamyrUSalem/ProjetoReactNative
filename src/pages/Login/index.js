@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { Alert } from 'react-native';
+import * as S from './LoginStyles';
 
-function Login({ navigation, onLogin }) {
+const Login = ({ navigation, onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -18,55 +19,24 @@ function Login({ navigation, onLogin }) {
     };
 
     return (
-        <View style={styles.container}>
-            <TextInput
-                style={styles.input}
+        <S.Container>
+            <S.Input
                 placeholder="Username"
                 value={username}
                 onChangeText={setUsername}
             />
-            <TextInput
-                style={styles.input}
+            <S.Input
                 placeholder="Password"
                 secureTextEntry={true}
                 value={password}
                 onChangeText={setPassword}
             />
-            <View style={styles.buttonsContainer}>
-                <View>
-                    <Button title="Login" onPress={handleLogin} />
-                </View>
-                <View>
-                    <Button title="Registre-se" onPress={handleNavigateToRegister} />
-                </View>
-            </View>
-        </View>
+            <S.ButtonsContainer>
+                <S.LoginButton title="Login" onPress={handleLogin} />
+                <S.RegisterButton title="Registre-se" onPress={handleNavigateToRegister} />
+            </S.ButtonsContainer>
+        </S.Container>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-    },
-    input: {
-        width: '100%',
-        height: 40,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 4,
-        paddingHorizontal: 10,
-    },
-    buttonsContainer: {
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: 10,
-    },
-});
 
 export default Login;
