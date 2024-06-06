@@ -1,5 +1,7 @@
 import React from 'react';
 import { Marker } from 'react-native-maps';
+import { Linking } from 'react-native';
+
 import { Container, MapContainer } from './MapStyles';
 
 function Map() {

@@ -35,7 +35,7 @@ function PostDetails({ route }) {
     const handleDeleteComment = async (commentId) => {
         Alert.alert(
             'Deletar Comentário',
-            'Tem certeza?',
+            'Prosseguir?',
             [
                 {
                     text: 'Cancel',

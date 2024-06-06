@@ -11,6 +11,7 @@ function Profile({ userCredentials }) {
     const [username, setUsername] = useState(userCredentials.username);
     const [password, setPassword] = useState(userCredentials.password);
     const [isEditing, setIsEditing] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     useEffect(() => {
         loadProfileImage();
@@ -60,26 +61,28 @@ function Profile({ userCredentials }) {
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Permissão negada', 'Precisamos da sua permissão para acessar a galeria.');
+            Alert.alert('Permissão necessária', 'Precisamos de permissão para acessar sua biblioteca de mídia.');
             return;
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
-            aspect: [1, 1],  // Tornar a seleção da imagem quadrada
+            aspect: [1, 1], // Garante uma seleção quadrada
             quality: 1,
         });
 
-        if (!result.cancelled) {
-            setProfileImage(result.uri);
-            saveProfileImage(result.uri);
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+            saveProfileImage(result.assets[0].uri);
         }
     };
 
     return (
         <Container>
-            {profileImage ? (
+            {selectedImage ? (
+                <ProfileImage source={{ uri: selectedImage }} />
+            ) : profileImage ? (
                 <ProfileImage source={{ uri: profileImage }} />
             ) : (
                 <Placeholder>

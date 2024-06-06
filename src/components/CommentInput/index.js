@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { TextInput, Button } from 'react-native';
-import { Container, Input } from './CommentInput';
+import { Button } from 'react-native';
+import { Container, Input } from './CommentInputStyles';
 
 const CommentInput = ({ onAddComment }) => {
     const [comment, setComment] = useState('');
